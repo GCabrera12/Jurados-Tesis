@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación de Ideas - PROMHIL</title>
+<style>
+  :root {
+    --primary: #1a3c6e;
+    --primary-light: #2d5a9e;
+    --accent: #e8a33d;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e2e6ea;
+    --good: #2f9e44;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .container { max-width: 640px; margin: 0 auto; padding: 16px; }
+  .card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 1.3rem; color: var(--primary); margin: 0 0 8px; }
+  h2 { font-size: 1.05rem; color: var(--primary); margin: 0 0 8px; }
+  p { line-height: 1.5; color: var(--text); }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+  button:active { background: var(--primary-light); }
+  button.secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+  }
+  input[type="password"], input[type="text"], textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .progress-bar {
+    height: 8px;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .progress-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+  .rubric-box {
+    background: #fbf6ec;
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    font-size: 0.92rem;
+  }
+  .rubric-box ul { margin: 6px 0; padding-left: 18px; }
+  .criterio { margin-bottom: 18px; }
+  .criterio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .criterio-title { font-weight: 600; font-size: 0.98rem; }
+  .info-btn {
+    background: var(--border);
+    color: var(--primary);
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    line-height: 22px;
+    text-align: center;
+    padding: 0;
+    cursor: pointer;
+    border: none;
+  }
+  .scale {
+    display: flex;
+    gap: 6px;
+  }
+  .scale button {
+    flex: 1;
+    padding: 12px 0;
+    background: #fff;
+    color: var(--primary);
+    border: 1.5px solid var(--border);
+    font-weight: 700;
+  }
+  .scale button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .criterio-desc {
+    display: none;
+    font-size: 0.85rem;
+    background: #f0f4fa;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 6px;
+    color: var(--text);
+  }
+  .criterio-desc.show { display: block; }
+  .sheet-img {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .transcript-box {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 4px 2px;
+  }
+  .nav-row { display: flex; gap: 10px; margin-top: 10px; }
+  .nav-row button { flex: 1; }
+  .center { text-align: center; }
+  .hidden { display: none !important; }
+  .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .saved-check {
+    color: var(--good);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: none;
+  }
+  .saved-check.show { display: inline; }
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .summary-item.incomplete { color: #c0392b; font-weight: 600; }
+  .error-msg { color: #c0392b; font-size: 0.9rem; margin-top: 8px; }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  a.link-back { color: var(--primary); font-size: 0.85rem; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+// ======== CONFIGURACIÓN ========
+const API_URL = "https://script.google.com/macros/s/AKfycbz96z6zXOa0NeH6nm1dTtjOwYkdlmIisPANQEGkBKpMF_8fFoUXtm5p9IPGHVW1PQUfuw/exec";
+const TOTAL_EQUIPOS = 31;
+const TEAM_TEXT = {
+  "1": "- Diferenciar los uniformes del personal auxiliares, choferes y encargados\n\n-Contratar un mecánico automotriz para mantenimiento de camiones (disminuye el gasto de combustible y las U/N estarían listos rápidamente).\n\n- Implementar máquina de bebidas y productos (dispensadora)\n\n- Capacitación de productos nuevos para Almacén (auxiliares)\n\n- Implementar actividades recreacionales en días festivos\n\n- Que Tienda de almacén sea visible al público\n\n- Hacer marketing masivo en redes sociales (para incrementar ventas)\n\n- Implementar una compresora de aire, nos serviría para la limpieza de las móviles (montacarga y apiladoras, así se quitaría el polvo y se alargaría la vida útil de las máquinas).\n\n- Reuniones entre diferentes áreas para dar las ideas o sugerencias o inconvenientes en ruta\n\n- Tener tarjetas de presentación y lugares de compra de Promhil para clientes de paso",
+  "2": "A) 1. Problema: demoras en la atención de clientes que vienen a recoger su mercadería a la central (no cumplen los rangos de horario de entrega)\n\n2. propuesta: un personal específicamente para este tipo de clientes (para la atención al cliente)\n\n3. Implementación: capacitar a esa persona para dicha atención al cliente.\n\n4. Justificación: se mejoraría la atención, masificación del cliente final, buenas referencias para la empresa.\n\nB) 1. Problema: frecuentes suspensiones, muchas veces generan cuello de botella en algunas áreas y obstrucción en y carga laboral en otras.\n\n2. Propuesta: evaluar por qué cierto personal en algunas ocasiones llegan tarde y considerarlo en caso de:\n\n-   Viven demasiado lejos\n\n-   Hubo paro\n\n-   Algún accidente\n\n-   Tener tolerancia de cinco minutos\n\n-   Fallas de vehículos\n\n3. Implementación: periodo de tolerancia de cinco minutos que se verifique la problemática y motivo de la tardanza. En caso de no usar los minutos de tolerancia, una bonificación por puntualidad.\n\n4. Beneficio: menos suspensiones y por lo tanto, menos carga laborar para los demás. Empleados más satisfechos.",
+  "3": "Propuesta 1: poner en cada tienda marcador digital. Por el motivo que a la hora de abrir las tiendas hay demoras por la conexión a Internet y por las demoras de las llaves al abrir las tiendas.\n\nPropuesta 2: poner pantalla de anuncios de los productos que se venden en la empresa. El motivo es para que el cliente tenga más conocimiento de los productos y promociones que hay en la tienda.\n\nPropuesta 3: tener un dispensador en cada tienda para los colaboradores\n\nPropuesta 4: en cada tienda tenga microondas y refrigeradora. El motivo para que el personal no esté yendo a otras tienda a calentar su comida y evitar el aglomeramiento.\n\nPropuesta 5: concursos de ventas para el personal que sea mensuales y las metas no sean muy elevadas. El motivo es que incentivamos al personal a seguir vendiendo.\n\nPropuesta 6: tablet para cotizar. El motivo es para poder cotizar y ver los precios para que el cliente no puede esperar tanto y se vaya a la competencia\n\nPropuesta 7: no trabajar los sábados con la condición de trabajar una hora diaria\n\nPropuesta 8: más implementación para el personal. El motivo tener casacas chompas gorras depende del estado del clima, para la salud del personal.",
+  "4": "lluvia de ideas\n\n1.  Comunicación entre áreas y compañeros\n\n-   Realizar reuniones breves internos al inicio de la jornada, indicando los procesos del día\n\n2.  Mejorar la comunicación entre las áreas\n\n-   Evita retrasos y mejora en la coordinación y que cambiemos la imagen que tiene Promhil. \"Promhil se demora mucho\"\n\n-   Cliente beneficios, recibe propuestas más rápidas y un servicio más eficiente\n\n3.  Que creen que harían una gran diferencia para la empresa\n\n-   Implementar la difusión de nuestra empresa de las marcas que vendemos en los medios de comunicación como (radio TV y redes sociales)\n\n-   Aumenta la visibilidad de la marca y de la empresa, atrae nuevos clientes y más ventas\n\n4.  Orden y limpieza en nuestras áreas de trabajo, para así brindar una buena imagen al cliente y así visualizar mejor los productos que deseen adquirir.\n\n5.  En equipo se puede agilizar la forma de trabajo delegando cargos y funciones.\n\n6.  Lo que yo mejoraría en sistemas que hay muchos procesos largos, que ya debería estar predeterminados según las tiendas, y también implementar que en las cotizaciones salgan los precios incluidos IGV\n\nGRACIAS TOTALES",
+  "5": "-   Demora de atención al cliente en el área de almacén:\n\n    -   Implementar personal dedicado a la atención del cliente en el almacén\n\n    -   Optimizar el tiempo de entrega de mercadería al cliente\n\n-   Mala planificación en los despachos de mercadería en los despachos agencias y clientes Lima\n\n    -   Organizar antes de cargar los carros según distancia y distrito\n\n    -   Comunicación constante, los supervisores con las agencias y los clientes\n\n    -   Actualización de las direcciones día a día.\n\n    -   Optimizar el tiempo y gastos operacionales (combustible y personal)\n\n-   Atención eficiente y rapidez al proveedor\n\n    -   Congestión en los almacenes y la cochera\n\n    -   Atraso para la carga y descarga de mercadería para el área de almacén\n\n-   Los encargados ver el espacio y agilizar su recepción",
+  "6": "1.\n\n-   Problema: falta de integración, coordinación y comunicación entre áreas y sucursales (tiendas), genera conflictos, retrasos, incomodidad que se refleja en la tensión entre clientes y compañeros\n\n-   Propuesta: generar dinámicas integradoras de acercamiento, como Hincanas, desayunos o plataformas virtuales sociales\n\n-   Implementación: plan de integración, en donde participen en las áreas para su elaboración\n\n2.\n\n-   Problema: falta de personalización al servicio al cliente\n\n-   Propuesta: implementación de un CRM para llegar al cliente con detalles como presentes por cumpleaños o aniversarios a clientes potenciales, debido a que la competencia sí lo hace\n\n-   Implementación: iniciar primero con clientes potenciales primero en Lima y luego provincia\n\n3.\n\n-   Problema: falta de procesos formalizados con el contexto normativo legal del país. Que genera un alto riesgo en las operaciones.\n\n-   Propuesta: implementar las ISO 45001 (seguridad y salud en el trabajo) y ISO 9001 (Calidad del servicio)\n\n-   Implementación: formalización de procesos y generar los planes para la certificación ISO 45001, 9001.\n\n4.\n\n-   Problema: no disponer en línea comprobantes necesarios para el cliente\n\n-   Propuesta: herramientas digitales (usuarios para cada cliente y puedan ver sus comprobantes)",
+  "7": "-   Nuestra primera propuesta sería un concesionario para abastecer los alimentos a los trabajadores, de este modo, se evitarían salir a buscar, así evitarían demoras en el horario del refrigerio, como también contratar una máquina expendedora de snacks y bebidas\n\n-   Implementar en el sistema cantidad real del Stock de los productos de esta manera evitaríamos errores al momento de pasar pedido que el movimiento de Stock sea ingresado en el día\n\n-   Bonificaciones al personal por desempeño a cada área, es decir, por puntualidad, presentación personal, atención rápida al cliente, mantener el área de trabajo en orden y limpio, de esta manera incentivan al personal\n\n-   Celebrar fechas festivas como día del trabajador, aniversario de la empresa, compartir navideño con los niños de los trabajadores, día del vendedor, efectuando dinámica de grupos, de este modo, los trabajadores pueden relajarse y sentirse más motivados\n\n-   Mejorar el área de RRHH que el personal [ilegible] tenga más llegada al personal, ya que no sentimos respaldo de dicha área.",
+  "8": "Problema: exceso de pasos en facturación a crédito y con guía\nPropuesta:\n\n-   Simplificar el proceso con el apoyo de (sistemas área), eliminando pasos innecesarios\n\n-   Esto funcionaría porque reduciría el tiempo en la tensión. Y el cliente quedaría satisfecho.\n\nProblema: muestrarios físicos, no acorde a las dimensiones de la tienda\nPropuesta:\n\n-   Diseñar nuevos muestrario con productos actualizados que se adaptan al tamaño de cada tienda y complementar con código QR del catálogo\n\n-   Hacer muestrarios de cables que se requieran cortes\n\n-   Esto ayudaría a que el cliente conozca mejor los productos que tenemos disponible\n\n-   Permitiría que se aproveche cada metro cuadrado de cada Tienda al 100%\n\nProblema: demora en otorgar descuentos\nPropuesta: se sugiere designar a una sola persona de otorgar los descuentos adicionales, para que no tome mucho tiempo en la respuesta. Y no perder ventas grandes.\n\nProblema: [en blanco]\nPropuesta:\n\n-   Las reuniones de los jefes sean dos veces al mes\n\n-   Que no trabajemos sábado",
+  "9": "-   Falta de comunicación en general, podría mejorar funciones en el trabajo y ayudarnos a poder trabajar en equipo, para un mejor desarrollo laboral\n\n-   Falta de comunicación, la falta de comunicación es un aspecto, el cual se debe mejorar, ya que, si un equipo no se comunica entre sí, es muy difícil alcanzar un objetivo, se debe tener una mejor comunicación y una previa coordinación con nuestros clientes y encargados de nuestras tiendas, para así poder tener un mejor despacho del producto que se va a entregar.\n\n-   Orden y limpieza en general, se debe tener un mejor orden y mantener limpia las áreas de trabajo; la empresa debería tener mejores áreas en donde dejar desperdicios. Para así poder, tener una zona de trabajo, ordenada y limpia, lo cual también nos ayudaría a tener el visto bueno de nuestros clientes y así tener una mejor relación financiera con ellos.",
+  "10": "-   Se podría mejorar el tiempo de atención al cliente en la tienda de Andahuaylas\n\n-   Se podría implementar un Stock para la tienda para que el despacho sea más rápido\n\n-   PAVCO implementar una zona de embalaje para las cajas, ya que se pierde tiempo al traer a Andahuaylas para embalar y luego regresar a Manco Capac para cargar de tubos y recién completar el pedido\n\n-   Implementar una impresora y computadora en PAVCO para agilizar los pedidos ya que la información sólo llega a Andahuaylas y cuando hay un apoyo se tiene que esperar que llegue la información de Andahuaylas\n\n-   Mejorar la coordinación con las agencias para el despacho de tubos y también cambiar el horario para llevarlos a las agencias, actualmente se llevan en la tarde y a esa hora las agencias están llenas y no aceptan la entrega por el espacio, lo cual genera gastos en combustible y personal\n\n-   Priorizar que los pedidos que saldrán al día siguiente día se se tengan con más tiempo\n\n-   Actualmente en el picking se realiza un Check-list, pero el personal no se da abasto ya que cuando hay varias personas picando, para la revisión el tiempo de espera es un aprox de lo minutos generando demoras para dicho trabajo perjudicando el tiempo promedio de preparación de pedido. Una solución sería que los jefes directos se comprometan más al trabajo en equipo, o también implementar una máquina para un autocontrol.",
+  "11": "Mejorar la atención al cliente en tiendas\n\n-   Problema: se ha identificado que algunos vendedores ya sean tiendas, no cuentan con una capacitación adecuada en atención al cliente, lo que ocasiona una atención poco profesional e inconsistente. En algunos casos, no saludan al cliente, no identifican correctamente sus necesidades, brindan información incompleta sobre los productos o no realizan un adecuado cierre de ventas. Esto genera una experiencia de compra poco satisfactoria, disminuye la confianza del cliente y puede ocasionar la pérdida de ventas y de clientes potenciales.\n\n-   Propuesta de mejora: implementar un programa permanente de capacitación en atención al cliente y técnico de ventas, acompañado de un protocolo de atención estandarizado que todos los vendedores deben seguir\n\n-   Implementación:\n\n    -   Evaluar el nivel actual de atención mediante observación y encuestas a clientes\n\n    -   Elaborar un manual de atención al cliente con procedimientos claros\n\n    -   Realizar capacitaciones mensuales mediante talleres y simulaciones de casos reales\n\n    -   Supervisar periódicamente el desempeño de los vendedores utilizando listas de verificación\n\n    -   Aplicar encuestas de satisfacción y brindar retroalimentación continua al personal\n\n-   Justificación: esta propuesta funcionaría porque un vendedor capacitado no sólo conocen los productos, sino que también sabe cómo comunicarse con el cliente, comprender sus necesidades y ofrecer soluciones adecuadas. La capacitación continua y la estandarización del proceso de atención permitirán mejorar la calidad del servicio, incrementar la satisfacción del cliente y fortalecer su confianza en la empresa. Asimismo, un mejor servicio contribuye a aumentar las ventas, fomentar la fidelización de los clientes y mejorar la imagen corporativa, generando una ventaja competitiva frente a otras empresas distribuidoras.",
+  "12": "Problema:\n\n1.  Despacho de mercadería entre almacén y tiendas\n\n2.  Error en el sistema operativo de ventas\n\n3.  Capacitación o orientación hacia el personal de Tienda\n\nSolución:\n\n1.  Nivelar el horario entre almacén y tienda para mejorar la coordinación de despacho\n\n2.  Mejorar el sistema o cambiar el sistema operativo de ventas\n\n3.  Contratar a una persona capacita para orientar en el sistema operativo y tema de ventas\n\nJustificación:\n\n1.  Ayudaría mucho una mejora atención al cliente que recoge la mercadería en almacén\n\n2.  Ayudaría a mejorar en el tema de facturación al cliente, caja requerimiento etc. Para una manera más útil y eficaz.\n\n3.  Ayudaría mucho en la orientación de conocimiento y características, para una mejor atención al cliente en tema de ventas.\n\n4.  Para que el personal esté capacitado en el tema que producto está pendiente de venta y el cliente esté satisfecho.",
+  "13": "1.  Falta de publicidad\n\n    a.  Propuesta: mejoramiento de la publicidad en los diferentes canales de comunicación\n\n    b.  Implementación: realizar contenidos en las diferentes redes sociales de los productos que vendemos y de nuestras tiendas. También promocionando eventos de nuestra empresa (canal de ventas, presencial- virtual)\n\n    c.  Justificación: funcionaría porque mejoraría un mejor posicionamiento de la marca Promhil antes los cliente. También sería más visible nuestra marca.\n\n2.  Falta de incentivos más dinámicos para el personal de tienda\n\n    a.  Propuesta: mecanismos de premiación (vales de consumo; días libres, de descanso, por cumplimiento de metas ya sea por tienda; reconocimiento a los trabajadores por cumplimiento de ventas, asistencia, no tardanzas, etc.)\n\n    b.  Implementación: escalarlo a las jefaturas inmediatas para la evaluación y de ahí sea aprobada y trasladada al personal de tienda. Esta implementación que sea de manera mensual o trimestral o según la temporada donde se necesite llegar a resultados.\n\n    c.  Justificación: funcionaría porque motivaría el personal de ventas y generaría mayor compromiso con la empresa\n\n3.  Mejor manejo en la política de tardanza\n\n    a.  Propuesta: mejorar la política en la tolerancia de tardanzas (por lo menos al mes 2 veces \"5 minutos\" es decir 8:35 A.M.) también que la comunicación en la sanción por tener tardanzas acumuladas se avisada anticipada. Si bien es cierto es correcta la sanción pero se debería avisar)\n\n    b.  Implementación: escalar a la jefatura inmediata para su aprobación y sea trasladada al personal. A través de la página web de \"Manü\" o de canal de comunicación directo con el personal.\n\n    c.  Justificación: funcionaría porque la comunicación mejoraría entre jefe inmediato y el trabajador. Mejoraría el compromiso del personal de tienda porque sentiría apoyo.",
+  "14": "-   Coordinar un horario fijo para la descarga de las unidades de Indeco, para no congestionar patio de maniobras así no dificultar la carga y descarga de las unidades.\n\n-   Proponer incentivos al personal: que la empresa nos dé un objetivo (meta) mensual y si logramos llegar que nos dé bono por productividad\n\n-   Implementar papel higiénico en los baños (almacén)\n\n-   Colocar un dispensador de agua en el comedor\n\n-   Mejorar el área de despacho: tener 2 auxiliares fijo en almacén, ya que nos falta gente para alistar los pedidos",
+  "15": "1.  Mejora de gestión de recursos humanos:\n    Problema u oportunidad:\n\n-   Escasas actividades de integración\n\n-   Falta de agasajos en fechas importantes (día de la madre, día del padre, día de la amistad, fiestas, patrias, día de la canción criolla, día del trabajador, y apertura de año). PSDTA. Sólo se celebra Navidad (fiesta de fin de año).\n\n-   Mayor agasajo en cumpleaños del personal\n\n  Propuesta e implementación:\n\n-   Coordinar fechas clave para elaborar equipos por colores y realizar actividades de confraternización día del trabajador o mitad de año, elaborar almuerzo etc.\n\n-   Entrega de pequeño presente al trabajador por su cumpleaños, y la opción de tomar día libre a cuenta de vacaciones.\n\n-   Correos, motivacionales y de saludos en fechas importantes\n\nJustificación: identificación y satisfacción del personal\n\n2.  Gestión de atención al cliente (tiendas)\n    Problema u oportunidad:\n\n-   Llamadas de clientes y satisfechos con la atención brindada al área de Recepcion de la empresa\n\nPropuesta e implementación:\n\n-   Capacitar al personal de ventas para mejorar la atención al cliente (sobre todo en el caso de clientes complicados y difíciles de tratar)\n\nJustificación:\n\n-   Mejorar servicio brindado por PROMHIL para antiguos y nuevos clientes\n\n-   Hacer que los clientes no necesiten llamar a quejarse y puedan resolver sus inconvenientes directamente con su vendedor (campo o tienda)\n\n3.  Medidor de satisfacción al cliente\n    Problema u oportunidad:\n\n-   No existe una forma tangible de saber qué tan satisfecho está el cliente\n\n  Propuesta e implementación: identificar tipos de KPIS que nos funcionen para implementarlos en la medidor con ayuda de sistemas (encuestas, etc.)\n\n  Justificación: clientes que consideren que su opinión está haciendo escuchada",
+  "16": "Problemas:\n\n-   Al efectuar el despacho, no hay un buen trato al cliente\n\n-   Falta de comunicación para efectuar las labores de limpieza\n\n-   Mayor conocimiento de los productos que comercializamos\n\n-   Mobiliario con problemas (silla)\n\nSoluciones:\n\n-   Inducción al personal encargado\n\n-   Mayor coordinación entre la jefatura de limpieza y las áreas\n\n-   Capacitación por técnicos especializados en cada marca para poder captar más clientes y mejorar las ventas\n\n-   Renovar el mobiliario (sillas) para no perjudicar la salud del trabajador",
+  "17": "Problema: sistema OFFisis, es poco eficaz presenta trabas operativas\n\n-   Problema: sistema Ofisis, es poco eficaz presenta trabas operativas y ralentiza el servicio al cliente\n\n    a.  Propuesta: básicamente sería la actualización de un nuevo software\n\n    b.  Implementación: hacer una llamada al área de sistemas para que analicen los detalles que presenta el sistema actual\n\n    c.  Justificación: funcionaría porque ataca directamente a la productividad del equipo\n\n-   Problema: muchos clientes solicitan información o cotizaciones, pero no se les da seguimiento\n\n    a.  Propuesta: implementar un proceso de seguimiento a todos los clientes que soliciten en cotizaciones\n\n    b.  Implementación:\n\n        i.  Registrar los datos de cada cliente\n\n        ii. Dar seguimiento por llamada o WhatsApp\n\n        iii. Ofrecer promociones\n\n    c.  Justificación: un seguimiento oportuno aumenta la confianza, mejora la atención\n\n-   Problema: el no usar cocheras o zonas de parqueo autorizadas dificulta el proceso de descarga ya que muchas veces los chóferes son detenidos por la municipalidad o la policía\n\n    a.  Propuesta: crear un programa de alianzas estratégicas logísticas y optimización de rutas, que consiste en negociar convenios con estacionamientos privados estratégicos.\n\n    b.  Implementación: convenios corporativos en lugar de comprar o alquilar cocheras. PROMHIL puede firmar convenios con estacionamientos comerciales.\n\n    c.  Justificación: esto ataca directamente al retraso del proceso que suele volverse afectado por la policía o municipalidad",
+  "18": "1.  El personal y cliente muchas veces al día salen para comprar algo (galletas o algo para tomar). En este caso se sugiere contratar un proveedor que implemente una máquina expendedora.\n\n2.  En el despacho nuestro cuello de botella es el embalado de la mercadería para nuestros clientes de provincia, lo ideal es implementar una máquina que reduzca el tiempo (en la actualidad este proceso es manual)\n\n3.  Implementar un POS el cual al momento de recepcionar la mercadería por medio de un código de barra ingrese a nuestro sistema la guía\n\n4.  Problema el personal sale a la calle a buscar menú, se propone contratar a un proveedor que brinde desayuno y almuerzo al personal y la empresa nos descuente a fin de mes\n\n5.  Implementar un televisor en la zona de espera de los clientes el cual indique los horarios de atención, y si el cliente ya llegó a la empresa, con la finalidad de presentar un proceso fluido\n\n6.  Construir barandas de seguridad en las líneas peatonales\n\n7.  Implementar una sombrilla para el patio con la finalidad de de evitar lluvias, el sol y suciedad en el patio",
+  "19": "Problema\n\n1.  No existe datos precisos en las salidas de las móviles al iniciar sus recorridos en entrega\n\n    a.  Tener un filtro con el encargado de las unidades\n\n    b.  Tener una charla o reunión con los encargados que nos ayudaría un mejor flujo en los procesos\n\n2.  No tener área señalizadas con los códigos en el área almacén y eso dificulta los colaboradores nuevos al momento de las capacitaciones y aprendizaje\n\n    a.  Crear un mapa de ubicaciones que faciliten las tareas a realizar diarias, aplicar señalizaciones y codificar las áreas de Packing, esto nos ayudará a gestionar mejor el almacén y obteniendo un aprendizaje más efectivo a los colaboradores nuevos\n\n3.  Aglomeración de clientes que vienen a recoger su mercadería fuera de su hora programada\n\n    a.  Hacer de conocimiento al vendedor que los clientes lleguen a la hora programada debido a la demanda que se tiene en Promhil, de lo contrario se atenderá en espacio libre\n\n    b.  Seguridad informa que la mercadería que recogerá al cliente son pequeñas en volumen automáticamente atenderlo para no generar malestar al cliente\n\n4.  Falta de limpieza y orden en el Almacén\n\n    a.  Que el área de limpieza, nos apoye una hora con el orden y limpieza en el almacén, Y cómo se implementaría, con una coordinación con el jefe de mantenimiento, y como resultado obtendremos, un almacén más ordenado y limpio.\n\n5.  No deberían dejar motos o Custer en la fachada de la emp. Debido a los constantes robos que existe por la zona.\n\n    a.  Qué habiendo cochera de la empresa deberían guardarlo en la misma\n\n    b.  Guardar en cochera previo permiso de la empresa para evitar problemas\n\n6.  El personal no usa el uso obligatorio de equipo de protección personal EPP. Lo cual se están expuesto a cualquier accidente\n\n    a.  Propongo que simplemente de uso correcto a las indicaciones de seguridad\n\n    b.  El personal de seguridad estaría atento que se cumplan las normas de seguridad\n\n7.  Por mejorar la cultura del Almacén. El orden y limpieza\n\n    a.  Empezar la implementación de los 5S en todo el área\n\n    b.  Empezamos una reunión con todos los encargados de cómo estructuramos la implementación de dicho método, y así poder ejecutarlo y crear una cultura de orden, limpieza, clasificación y disciplina dentro de nuestros almacenes\n\n    c.  Propuesta: contratar una entidad de auditoría y que se encargue de darnos formalmente los cargos correspondientes si cumplimos con este método de las 5S y darnos el feedback para poder llevar a cabo la mejora continua",
+  "20": "Problema\n\n1.  Poco conocimiento del producto y Baj, calidez en la atención\n    Propuesta: capacitaciones participativas al personal\n    Implementación: las capacitaciones se darían una vez al mes, de manera dinámica y participativa\n    Justificación: el personal mejoraría la atención, demostrando lo aprendido\n\n2.  Problema: falta de comunicación con las diferentes áreas\n    Propuesta: definición de roles y procesos\n    Implementación: implementar guías manuales en cada área\n    Justificación: facilitaría el proceso de venta y dejamos la comunicación únicamente para temas puntuales\n\n3.  Problema: desconocimiento de las comisiones\n    Propuesta: el personal encargado debe indicar el proceso adecuado para calcular las comisiones mensuales del personal de tiendas\n    Implementación: a través de un manual de cálculo de comisiones\n    Justificación: reduciría la falta de satisfacción del personal y se vería reflejado en un mayor desempeño",
+  "21": "1.  Trabajo remoto\n    Sistemas, cobranzas y otras áreas sujetas a evaluación (confirmaciones)\n    Problema u oportunidad: facilidad de contratación al personal\n    Propuesta: trabajo remoto\n    Implementación: facilitarle el servicio Internet. Equipo de cómputo. Equipo celular, etc.\n    Justificación: reducción de costos (servicios básicos)\n\n2.  Máquina de billete (tesorería)\n    Problema u oportunidad: demora en control de billetes\n    Propuesta: máquina contadora de billete (dinero)\n    Implementación: buscar una máquina con costo accesible, con las funciones apropiadas\n    Justificación: ahorro de tiempo, detector de billetes falsos y deteriorados\n\n3.  Mejoramiento clima laboral\n    Propuesta: no laborar los días sábados\n    Implementación: compensar las horas de lunes a viernes\n    Justificación: reducción de permisos, buen clima laboral personal tendría tiempo para capacitarse y tiempo en familia.\n\n4.  Bono puntualidad\n    Problema: las tardanzas de asistencia\n    Propuesta: bono de puntualidad mensual\n    Implementación: aplicar a los colaboradores que cumplan los filtros de asistencia puntualidad\n    Justificación: reducción de tardanza y suspensión personal por acumulación tardanza",
+  "22": "Problema u oportunidad: proponer ideas laborales, que el jefe de área el equipo que arma no debe rotar mucho\n\n-   Gestionar las horas de trabajo\n\n-   Tener más oportunidades en el ascenso de la empresa\n\nPropuesta: mejorar la logística de almacén en los clientes que son enviados de tienda\n\n-   Tener más comunicación, con el área de mantenimiento para la mejora de las tiendas y dar solución\n\n-   Tolerancia a la hora del ingreso del personal\n\n-   Tener más capacitaciones seguidas para el personal de tienda\n\nImplementación: tener un uniforme que nos identifique al personal de ventas en tienda\n\n-   Los EPPS que son enviadas a tienda, ser de mejor calidad para el uso del personal.\n\nJustificación: tener cámara en las tiendas para una mejor seguridad\n\n-   Tener más comunicación con el área de RRHH",
+  "23": "1.  Problema: falta de conocimientos por los productos de la empresa\n\n-   Propuesta: capacitaciones esporádicas de los productos de la empresa (conocimientos básicos)\n\n-   Implementación: que un personal de ventas o líder de dichas áreas, sea la persona encargada de hacer dichas capacitaciones trimestrales\n\n-   Justificación: funcionaría para un mejor servicio a los clientes por el personal de almacén. Y beneficiaría de manera interna a la empresa a la integración de áreas y formación de líderes.\n\n2.  Problema: demora en el tiempo de descarga\n\n-   Propuesta: camiones con rampa. Y que las tiendas tengan transpaletas y estocas\n\n-   Implementación: adquirir esas herramientas para el beneficio de la descarga\n\n-   Justificación: aminorar u optimizar los tiempos de descarga. Y así mejorar el tiempo en las entregas de los clientes y tener más personal en almacén",
+  "24": "1.  Falta de integración como colaboradores\n    Propuesta: implementar más actividades grupales (pausas activas, dinámicas, grupales y paseos de integración)\n    Implementación: armar un plan de trabajo anual donde se consideren estas actividades\n    Justificación: mejoraríamos, el clima laboral y afianzaríamos a nuestros colaboradores\n\n2.  Información descentralizada\n    Propuesta: crear un asistente virtual con IA que es centralice la información en una plataforma única y compartida\n    Implementación: implementar un sistema que integra la información de todas las áreas\n    Justificación: mejorará la comunicación optimizará a los procesos y permitirá un acceso rápido y confiable\n\n3.  Existen lugares con potencial que aún no han sido explorados\n    Propuesta: expandir la presencia hacia nuevos lugares estratégicos\n    Implementación: identificar y evaluar progresivamente nuevas ubicaciones con mayor potencial\n    Justificación: permitirá captar nuevos clientes y generar nuevas oportunidades de crecimiento",
+  "25": "1.  Emprende prom\n\n-   Problema u oportunidad: búsqueda de nuevos clientes que se conviertan en clientes recurrentes\n\n-   Propuesta: proponer \"packs\" de iniciación de negocio para emprendedores (personas naturales, con alto capital monetario) en el cual quieran invertir para iniciar nuevo negocio. Este negocio sería habilitarle su primera compra para abastecer su negocio de ferretería con productos de Promhil (Indeco,BTICINO, PAVCO, etc)\n\n-   Implementación: crear un enlace en la en la página web en la cual te puedas contactar con la empresa y ofrecerle la propuesta de inversión de una ferretería. Internamente se evalúa al candidato si es que califica (financiero, deudas, etc.) se procede con la implementación.\n\n-   Justificación: existen muchas personas con capital que no saben dónde invertir o invierten en negocios como restaurantes, mini Market, lavanderías, etc. Nosotros sería una opción sin pérdida de inversión\n\n2.  Unificación ERPS RRHH\n\n-   Problema u oportunidad: existen varios sistemas o plataformas de diferentes distribuidores que no son compatibles entre sí, lo que genera inversión de más horas hombre\n\n-   Propuesta: unificar plataformas en un solo solo proveedor\n\n-   Implementación: evaluar diferentes opciones de plataforma en conjunto con contabilidad que incluya todos los servicios\n\n-   Justificación: esto permitirá que el proceso sea más fluido y tome menos tiempo\n\n3.  Beneficios para el empleado\n\n-   Problema u oportunidad: Acciones para mejorar el clima laboral / retención de personal\n\n-   Propuesta: permiso de mediodía por cumpleaños. Optimización de horario-cambio de horario L-V.\n\n-   Implementación: proponer a Gerencia el nuevo horario (extendiendo la jornada), sustentar la propuesta con datos de ventas del día. Sábado frente a los días de semana.\n\n-   Justificación: mejor el clima\n\n4.  Liquidación automática\n\n-   Oportunidad: automatización de planillas. Facturas al contado deberán ser automáticamente liquidadas en el sistema. Esto ayudaría a ser más eficiente para los vendedores y también algo que ya está confirmado al comprobante de pago por el área de cobranzas.\n\n5.  Visualización de Stock del proveedor\n\n1.  Problema: mucho tiempo de espera para tener una respuesta de un código, lo cual nos deja esperando 3-4 horas y el cliente muchas veces cancela el pedido",
+  "26": "1.  Reforzar la comunicación entre áreas. Implementando pautas para las entregas en los días de mayor carga laboral (festivos, feriados, fin de mes).\n\n2.  Implementar un sistema de rastreo de pedidos. Para las entregas a obra o agencia y así puedan hacer un seguimiento a su compra.\n\n3.  Informar mediante un correo. Cuando ingrese un personal a la empresa o en caso contrario un personal se retire.\n\n4.  Emitir un comunicado indicando el sustento del alza de los precios, tanto en BTICINO e Indeco para así informar a los clientes.\n\n5.  Mayor publicidad e interacción en redes de la empresa\n\n6.  Consideración para los clientes según su ranking de compras anuales con algún beneficio o descuento adicional\n\n7.  Habilitar el Bot de la empresa para que los clientes puedan ver las fichas técnicas de todos los productos\n\n8.  Mayor personal e incrementar eficiencia para el despacho en atención al cliente en almacén\n\n9.  Fabricación de muestrarios de diversos calibres en los cables, para evitar errores y brinda mayor información a los clientes (cortes)\n\n10. Renovar los muestrarios de las tiendas con los productos actuales\n\n11. Informar respecto a los cambios en los productos, sea de imagen o características (clase o calibre de los N2XOH)\n\n12. Capacitación constante a los trabajadores para mejorar atención (cables, tubos, etc.)\n\n13. Considerar un incentivo al personal de tienda por sus cumplimientos de ventas individuales por tienda y así motivar a una mejor atención al cliente\n\n14. Considerar el cambio de fechas laborales de lunes a viernes",
+  "27": "1.  Mejorar la coordinación con las agencias, ya que actualmente hay mucha pérdida de tiempo al estar esperando para poder descargar. Aproximadamente un tiempo de 20 a 40 minutos.\n\n2.  Mejorar la organización antes de cargar la mercadería al camión, ya que muchas veces suben mercadería y lo colocan al fondo y cuando están en ruta y tienen que descargar esta mercadería está al fondo y complica mucho.\n\n3.  Problema: hay mucha desorganización en el orden de los módulos y debido a ello diario se tiene que hacer inventario. Proponemos, que se debe contratar a un personal específico para que pueda ordenar todo el almacén constantemente. Esto facilitará y contribuirá a que el personal de almacén pueda distribuirse de manera correcta y no estar a diario haciendo inventario.\n\n4.  Problema: a veces cuando se sale a ruta hay una falta de comunicación, ya que a veces el auxiliar y el chofer se separan ya sea por presencia policial o municipal o algún otro percance, debido a ello hay poca comunicación con los encargados, que cuando hay un problema no se puede solucionar al momento, se propone de que implemente un teléfono más así sea de teclas uno económico que sea más que todo para llamadas.\n\n5.  Problema: mala coordinación con facturación y distribución, ya que cuando hay carga laboral y supervisor quiere parar un camión a ruta, avisan al instante, en vez de siquiera llamar 30 minutos antes, propongo que el supervisor encargado comunique correctamente específicamente lo que saldrá para dar prioridad y el camión no tenga retrasos\n\n6.  Problema: al momento de ir a ruta y descargar en tiendas hay poco personal de tiendas para el apoyo de la descarga y eso genera demoras en la descarga, el personal viene un rato y se va o se demora en llegar. Se propone tener un personal más comprometidos y capacitados en la descarga y con su trabajo, esto ayudaría a una mayor eficacia en las rutas\n\n7.  Problema: No hay una buena comunicación entre vendedor cliente para descargar su mercadería, eso genera retrasos e incomodidad por parte del cliente. Proponemos que hay un mayor comunicación y especifiquen como y donde quieren su descarga; eso ayudará a que haya menos retrasos en ruta y un cliente satisfecho.",
+  "28": "1.\n\nProblema: la atención a los clientes que recogen sus productos en la sede de Andahuaylas presenta demoras y falta de eficiencia, lo que genera tiempos de espera prolongados, insatisfacción en los clientes y retrasos en el proceso de entrega\n\nPropuesta: implementar un sistema de entrega de mercadería mediante un código único generado por el supervisor de línea Indeco para cada pedido. Este código permitirá validar rápidamente la información del cliente y del pedido antes de la entrega, agilizando el proceso y reduciendo errores.\n\n2.\n\nProblema: implementar de una máquina para optimizar y agilizar el proceso de embalaje en el almacén de PAVCO\n\nPropuesta: bueno sería de implementar una máquina de embalaje y una balanza para agilizar el embalaje y el pesado de las cajas, y también así poder hacer la entrega más rápida en las agencias\n\nP: implementar una pizarra, donde se muestre los indicadores en tiempo real e imprima las hojas de picking\n\nI: instalar una pantalla con indicadores (pedidos pendientes, despachos, y KPI y configurar el sistema para que imprima automáticamente las hojas de picking\n\nJ: mejora el control de las operaciones, reduce los tiempos de espera, agilice el picking y aumenta la productividad",
+  "29": "Problema: es incómodo después de anular algún documento llenar la información un Excel\n\n2.  Implementación: sistema tenga un reporte para bajar la información la cantidad de anulaciones por día. Ya sea datos del los documentos\n\n3.  Justificación: reducir el tiempo del colaborador que anula documentos, pudiendo hacer otras labores\n\nProblema: falsificación de productos\n\n4.  Propuesta: capacitaciones, eventos, concursos\n\n5.  Implementación: puntos estratégicos en Mercado en nuestros clientes Top 10\n\n6.  Justificación: satisfacción al cliente, educar el usuario final.\n\nProblema: cotizador IA (agilizar procesos de atención). Existe demora de atención al cliente tanto como en canales digitales como por parte de los vendedores.\n\n7.  Propuesta: implementar un Bot de IA qué atienda consultas y genera hojas de cotización automáticamente.\n\n8.  Implementación: adquirir e integrar una solución de IA capaz de responder consultas frecuentes registrar datos y cotizaciones de forma inmediata\n\n9.  Justificación: reduce los tiempos de atención mejora la experiencia del cliente y aumenta la rapidez en el cierre de ventas\n\nSala de descanso\n\n-   Problema: los colaboradores necesitan recargar energías\n\n-   Propuesta: sala de reposo-descanso\n\n-   Implementación: sillones\n\n-   Justificación: mejoraría el desempeño laboral, por la recarga de labores\n\nCliente- Mejorar servicio al cliente\n\n-   Problema: pérdida de mercadería\n\n-   Propuesta: tener mejor embalaje\n\n-   Implementación: embalaje que no sea. Evite la visibilidad del producto.\n\n-   Justificación: dar buenos servicios a nuestros clientes; ya que es un dolor frecuente del cliente",
+  "30": "1.  La comunicación con almacén debería ser más fluida y menos burocrática porque con eso mejoraría la comunicación con los clientes y ellos tendrían una mejor experiencia al comprar\n\n2.  Para una mejor experiencia y mejora a la empresa deberíamos tener como empresa un solo tipo de uniforme, ya que los clientes la gran mayoría cuentan con los pedidos que nosotros usamos en el día día\n\n3.  Realizar el comienzo del día una pequeña reunión para coordinar algunos puntos o ventas del día\n\n4.  Motivar o incentivar a los compañeros al comienzo del día para que tengan un mejor desempeño en el día, mediante actividad física o dinámicas grupales\n\n5.  Sería bueno tener un Break de 10 a 15 minutos antes de comenzar nuestras labores ya que la gran mayoría de los colaboradores salimos muy temprano de nuestras casas\n\n6.  Realizar continuamente capacitaciones para el personal tanto antiguos como nuevos más a menudo para poder dar una mejor experiencia y poder orientar en sus compras a los clientes\n\n7.  Realizar exámenes de evaluación y conocimiento sobre las marcas de los productos que vendemos más seguido y a la vez recibir los mejores puestos incentivos para que eso genere más competitividad y compromiso\n\n8.  Debería haber concursos entre tiendas y la mejor tienda premiada con incentivos simbólicos y la última tienda realizar castillos sencillos\n\n9.  Nos falta bastante realizar más actividades festivas ya que hay fechas importantes que no celebramos, un ejemplo día del trabajador\n\n10. No trabajar los sábados ya que los días principales son de lunes a viernes",
+  "31": "Problema: falta de respaldo de la marca hacia los clientes\n\nPropuesta: presencia de un representante de Promhil y/o de la marca para brindarle más confianza al cliente. Asimismo aumentar, las opciones que existen en merch. En la empresa (agenda, tomatodo, llaveros).\n\nImplementación: presencia de personal de la marca y/o representante de PROMHIL para brindarle respaldo al cliente\n\nPropuesta: implementar reconocimiento para la motivación del personal\n\nPropuesta: (bono, almuerzo, vale, día libre de cumpleaños, para el personal destacado en el mes).\n\nJustificación: el personal se sienta valorado y a su vez motivado por la empresa\n\nPropuesta: implementación de plataforma académicas\n\nPropuesta (problema): falta crecimiento profesional académico\n\nImplementación: convenios con plataforma digitales como: Platzi, Coursera, Udemy\n\nJustificación: el personal desarrolle más sus capacidades académicas"
+};
+
+const CRITERIOS = [
+  {
+    key: "cantidad",
+    titulo: "a. Cantidad de ideas",
+    pregunta: "¿Cuántas ideas distintas generó el equipo?",
+    labels: ["Muy bajo", "Bajo", "Medio", "Alto", "Muy alto"],
+    niveles: [
+      { p: 5, n: "Muy alto", d: "El equipo registró 7 o más ideas claramente distintas entre sí." },
+      { p: 4, n: "Alto", d: "El equipo registró entre 5 y 6 ideas claramente distintas entre sí." },
+      { p: 3, n: "Medio", d: "El equipo registró entre 3 y 4 ideas claramente distintas entre sí." },
+      { p: 2, n: "Bajo", d: "El equipo registró 2 ideas claramente distintas entre sí, o varias ideas que en esencia son la misma repetida con otras palabras." },
+      { p: 1, n: "Muy bajo", d: "El equipo registró 1 idea concreta o ninguna." }
+    ],
+    nota: "Si dos ideas son en esencia lo mismo, pero con otras palabras, cuentan como una sola."
+  },
+  {
+    key: "originalidad",
+    titulo: "b. Originalidad (Novedad)",
+    pregunta: "¿Qué proporción de las ideas del equipo describe algo que la empresa no hace actualmente?",
+    labels: ["Muy bajo", "Bajo", "Medio", "Alto", "Muy alto"],
+    niveles: [
+      { p: 5, n: "Muy alto", d: "Todas las ideas del equipo describen algo que PROMHIL no hace actualmente." },
+      { p: 4, n: "Alto", d: "La mayoría de las ideas describen algo que PROMHIL no hace actualmente; alguna es una variación de una práctica ya existente." },
+      { p: 3, n: "Medio", d: "Aproximadamente la mitad de las ideas describen algo que PROMHIL no hace actualmente, y la otra mitad son variaciones o ajustes de prácticas existentes." },
+      { p: 2, n: "Bajo", d: "La mayoría de las ideas son variaciones menores de prácticas que PROMHIL ya realiza hoy." },
+      { p: 1, n: "Muy bajo", d: "Todas las ideas describen prácticas que PROMHIL ya realiza actualmente, sin ninguna variación." }
+    ],
+    nota: "Este criterio se evalúa contra la práctica actual de PROMHIL, no contra lo que hacen otras empresas del sector."
+  },
+  {
+    key: "factibilidad",
+    titulo: "c. Factibilidad",
+    pregunta: "¿Qué proporción de las ideas del equipo podría implementarse de forma realista con los recursos y procesos actuales de PROMHIL?",
+    labels: ["Muy bajo", "Bajo", "Medio", "Alto", "Muy alto"],
+    niveles: [
+      { p: 5, n: "Muy alto", d: "Todas las ideas podrían implementarse con los recursos y procesos que PROMHIL ya tiene hoy, sin inversión significativa." },
+      { p: 4, n: "Alto", d: "La mayoría de las ideas son implementables en el corto plazo con ajustes menores (coordinación entre áreas o costo bajo)." },
+      { p: 3, n: "Medio", d: "Aproximadamente la mitad de las ideas son implementables sin mayor inversión, y la otra mitad requeriría inversión moderada o coordinación entre varias áreas." },
+      { p: 2, n: "Bajo", d: "La mayoría de las ideas requerirían inversión considerable, cambios estructurales, o dependen de factores fuera del control directo de la empresa." },
+      { p: 1, n: "Muy bajo", d: "Ninguna de las ideas es realista de implementar para PROMHIL en un horizonte de tiempo razonable." }
+    ],
+    nota: "Una idea puede ser excelente en teoría pero poco factible dado el tamaño, presupuesto o estructura actual de la empresa. Eso no la hace mala idea, solo poco factible. Si una idea no incluye cómo se implementaría, evalúe la factibilidad de la idea en sí (sin considerar el mecanismo de implementación) comparándola con el tamaño, presupuesto y estructura actual de PROMHIL."
+  }
+];
+
+let STATE = {
+  pin: null,
+  nombre: null,
+  scores: {}, // team -> {cantidad, originalidad, factibilidad, comentario}
+  currentTeam: 1,
+  stage: "login" // login | welcome | scoring | summary
+};
+
+const app = document.getElementById("app");
+
+function render() {
+  if (STATE.stage === "login") renderLogin();
+  else if (STATE.stage === "welcome") renderWelcome();
+  else if (STATE.stage === "scoring") renderScoring();
+  else if (STATE.stage === "summary") renderSummary();
+}
+
+// ---------- LOGIN ----------
+function renderLogin() {
+  app.innerHTML = `
+    <div class="card center" style="margin-top:40px;">
+      <h1>Evaluación de Ideas</h1>
+      <p class="muted">PROMHIL - Estudio de equipos de trabajo</p>
+      <div style="margin:20px 0;">
+        <input type="password" id="pinInput" inputmode="numeric" maxlength="4" placeholder="Ingrese el PIN" style="text-align:center; font-size:1.4rem; letter-spacing:4px;">
+      </div>
+      <button onclick="tryLogin()">Ingresar</button>
+      <p class="error-msg" id="loginError"></p>
+    </div>
+  `;
+  document.getElementById("pinInput").focus();
+  document.getElementById("pinInput").addEventListener("keydown", e => {
+    if (e.key === "Enter") tryLogin();
+  });
+}
+
+async function tryLogin() {
+  const pin = document.getElementById("pinInput").value.trim();
+  if (!pin) return;
+  document.getElementById("loginError").textContent = "";
+  try {
+    const res = await fetch(`${API_URL}?pin=${encodeURIComponent(pin)}`);
+    const data = await res.json();
+    if (data.error) {
+      document.getElementById("loginError").textContent = "PIN incorrecto. Intenta de nuevo.";
+      return;
+    }
+    STATE.pin = pin;
+    STATE.nombre = data.nombre;
+    data.scores.forEach(s => { STATE.scores[s.team] = s; });
+    STATE.currentTeam = firstIncompleteTeam();
+    STATE.stage = "welcome";
+    render();
+  } catch (err) {
+    document.getElementById("loginError").textContent = "Error de conexión. Revise la conexión a internet e intente de nuevo.";
+  }
+}
+
+function firstIncompleteTeam() {
+  for (let t = 1; t <= TOTAL_EQUIPOS; t++) {
+    if (!isComplete(t)) return t;
+  }
+  return 1;
+}
+
+function isComplete(team) {
+  const s = STATE.scores[team];
+  return s && s.cantidad && s.originalidad && s.factibilidad;
+}
+
+// ---------- WELCOME ----------
+function renderWelcome() {
+  const completed = countCompleted();
+  app.innerHTML = `
+    <div class="card">
+      <h1>Bienvenido/a, ${STATE.nombre.replace('_', ' ')}</h1>
+      <p>En este ejercicio grupal, 31 equipos de PROMHIL contaron con 40 minutos para proponer ideas nuevas y útiles para la empresa. Basándose en su experiencia y en situaciones reales de su trabajo, se buscaron iniciativas para mejorar los procesos, servicios o experiencias, ya sea de manera interna o hacia los clientes.</p>
+      <p>La pregunta principal guía fue: <i>"Desde su experiencia en PROMHIL, ¿qué ideas propondría su equipo para optimizar, mejorar o hacer las cosas de manera diferente, de modo que la empresa y sus clientes se beneficien? Expliquen cada idea detalladamente."</i></p>
+      <p>A continuación se presentan las respuestas de los 31 equipos, identificados solo con un número, sin nombres. El progreso se guarda automáticamente; esta página se puede cerrar y retomar más adelante con el mismo enlace.</p>
+      <p class="muted">Progreso actual: ${completed} de ${TOTAL_EQUIPOS} equipos calificados.</p>
+    </div>
+
+    <div class="card">
+      <div class="rubric-box" style="display:flex; gap:10px; align-items:flex-start;">
+        <span style="font-size:1.2rem; line-height:1;">⚠️</span>
+        <p style="margin:0;">Las respuestas manuscritas fueron transcritas de forma fiel. Sin corregir ortografía, redacción, ni el contenido de las ideas; respetando en lo posible el orden y formato que cada equipo usó en su hoja. Si necesita ver la hoja original escaneada de un equipo en particular ante alguna duda de interpretación, puede solicitarse en cualquier momento.</p>
+      </div>
+
+    <div class="card">
+      <h2>Instrucciones para la evaluación</h2>
+      <p>Lea la lista completa de ideas presentada por el equipo antes de calificar. Califique los tres criterios de forma independiente. Una idea puede ser muy novedosa pero poco factible, o muy factible pero poco original. No es necesario que los tres puntajes coincidan.</p>
+    </div>
+
+    <div class="card">
+      <h2>Criterios de evaluación</h2>
+      <p class="muted">Escala de 1 (muy bajo) a 5 (muy alto)</p>
+      ${CRITERIOS.map(c => `
+        <div class="rubric-box">
+          <b>${c.titulo}</b>
+          <p style="margin:6px 0 10px;"><i>${c.pregunta}</i></p>
+          ${c.niveles.map(nv => `
+            <div style="margin-bottom:6px;"><b>${nv.p} - ${nv.n}:</b> ${nv.d}</div>
+          `).join("")}
+          <p class="muted" style="margin:8px 0 0;">Nota: ${c.nota}</p>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="card">
+      <button onclick="goToScoring()">${completed > 0 ? "Continuar calificando" : "Empezar a calificar"}</button>
+    </div>
+  `;
+}
+
+function goToScoring() {
+  STATE.stage = "scoring";
+  render();
+}
+
+function countCompleted() {
+  let n = 0;
+  for (let t = 1; t <= TOTAL_EQUIPOS; t++) if (isComplete(t)) n++;
+  return n;
+}
+
+// ---------- SCORING ----------
+function getPages(team) {
+  return []; // ya no se usan imágenes, se muestra el texto transcrito
+}
+
+
+function renderScoring() {
+  const team = STATE.currentTeam;
+  const s = STATE.scores[team] || {};
+  const pages = getPages(team);
+  const pct = Math.round((countCompleted() / TOTAL_EQUIPOS) * 100);
+
+  app.innerHTML = `
+    <div class="top-bar">
+      <span class="badge">Equipo ${team} de ${TOTAL_EQUIPOS}</span>
+      <a class="link-back" onclick="STATE.stage='summary'; render();">Ver resumen</a>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-label">${countCompleted()} de ${TOTAL_EQUIPOS} calificados</div>
+
+    <div class="card">
+      <div class="transcript-box" id="transcriptBox"></div>
+    </div>
+
+    <div class="card">
+      ${CRITERIOS.map(c => `
+        <div class="criterio">
+          <div class="criterio-header">
+            <span class="criterio-title">${c.titulo}</span>
+            <button class="info-btn" onclick="toggleDesc('${c.key}')">i</button>
+          </div>
+          <div class="criterio-desc" id="desc-${c.key}">
+            <i>${c.pregunta}</i>
+            ${c.niveles.map(nv => `<div style="margin-top:6px;"><b>${nv.p} - ${nv.n}:</b> ${nv.d}</div>`).join("")}
+            <div style="margin-top:6px; color:var(--muted);">Nota: ${c.nota}</div>
+          </div>
+          <div class="scale">
+            ${[1,2,3,4,5].map(v => `
+              <button class="${s[c.key]==v?'active':''}" onclick="setScore(${team},'${c.key}',${v})">${v}</button>
+            `).join("")}
+          </div>
+          <div class="scale-labels">
+            <span>${c.labels[0]}</span>
+            <span>${c.labels[4]}</span>
+          </div>
+        </div>
+      `).join("")}
+
+      <textarea id="comentario" placeholder="Comentario opcional...">${s.comentario || ""}</textarea>
+
+      <div class="nav-row" style="margin-top:14px;">
+        <button class="secondary" onclick="changeTeam(-1)" ${team===1?'disabled':''}>Anterior</button>
+        <button onclick="saveAndNext()">Guardar y siguiente</button>
+      </div>
+      <p class="center saved-check" id="savedCheck">✓ Guardado</p>
+    </div>
+  `;
+  document.getElementById("transcriptBox").textContent = TEAM_TEXT[String(team)] || "Texto no disponible para este equipo.";
+}
+
+function toggleDesc(key) {
+  document.getElementById(`desc-${key}`).classList.toggle("show");
+}
+
+function setScore(team, key, val) {
+  if (!STATE.scores[team]) STATE.scores[team] = {};
+  STATE.scores[team][key] = val;
+  render();
+}
+
+function changeTeam(delta) {
+  saveCurrentComment();
+  STATE.currentTeam = Math.max(1, Math.min(TOTAL_EQUIPOS, STATE.currentTeam + delta));
+  render();
+}
+
+function saveCurrentComment() {
+  const el = document.getElementById("comentario");
+  if (el) {
+    const team = STATE.currentTeam;
+    if (!STATE.scores[team]) STATE.scores[team] = {};
+    STATE.scores[team].comentario = el.value;
+  }
+}
+
+async function saveAndNext() {
+  saveCurrentComment();
+  const team = STATE.currentTeam;
+  const s = STATE.scores[team] || {};
+  if (!s.cantidad || !s.originalidad || !s.factibilidad) {
+    alert("Por favor califica los 3 criterios antes de continuar.");
+    return;
+  }
+  await persistScore(team, s);
+  if (team < TOTAL_EQUIPOS) {
+    STATE.currentTeam = team + 1;
+    render();
+  } else {
+    STATE.stage = "summary";
+    render();
+  }
+}
+
+async function persistScore(team, s) {
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        pin: STATE.pin, team,
+        cantidad: s.cantidad, originalidad: s.originalidad,
+        factibilidad: s.factibilidad, comentario: s.comentario || ""
+      })
+    });
+  } catch (err) {
+    console.error("Error guardando", err);
+  }
+}
+
+// ---------- SUMMARY ----------
+function renderSummary() {
+  const completed = countCompleted();
+  let items = "";
+  for (let t = 1; t <= TOTAL_EQUIPOS; t++) {
+    const ok = isComplete(t);
+    items += `
+      <div class="summary-item ${ok?'':'incomplete'}" onclick="STATE.currentTeam=${t}; STATE.stage='scoring'; render();" style="cursor:pointer;">
+        <span>Equipo ${t}</span>
+        <span>${ok ? '✓ Calificado' : 'Falta calificar'}</span>
+      </div>
+    `;
+  }
+  app.innerHTML = `
+    <div class="card">
+      <h1>Resumen</h1>
+      <p class="muted">${completed} de ${TOTAL_EQUIPOS} equipos calificados.</p>
+      ${items}
+    </div>
+    <div class="card">
+      <button class="secondary" onclick="STATE.stage='scoring'; render();">Volver a calificar</button>
+    </div>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
